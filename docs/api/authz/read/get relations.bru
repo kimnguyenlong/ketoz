@@ -1,0 +1,11 @@
+meta {
+  name: get relations
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{host_read}}/relation-tuples
+  body: none
+  auth: inherit
+}

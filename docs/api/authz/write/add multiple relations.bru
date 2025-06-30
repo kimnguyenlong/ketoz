@@ -1,0 +1,130 @@
+meta {
+  name: add multiple relations
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{host_write}}/admin/relation-tuples
+  body: json
+  auth: inherit
+}
+
+body:json {
+  [
+    {
+      "action": "insert",
+      "relation_tuple": {
+        "namespace": "Resource",
+        "object": "keto/src/",
+        "relation": "parents",
+        "subject_set": {
+          "namespace": "Resource",
+          "object": "keto/",
+          "relation": ""
+        }
+      }
+    },
+    {
+      "action": "insert",
+      "relation_tuple": {
+        "namespace": "Resource",
+        "object": "keto/src/readme.md",
+        "relation": "parents",
+        "subject_set": {
+          "namespace": "Resource",
+          "object": "keto/src/",
+          "relation": ""
+        }
+      }
+    },
+    {
+      "action": "insert",
+      "relation_tuple": {
+        "namespace": "Resource",
+        "object": "keto/src/be/",
+        "relation": "parents",
+        "subject_set": {
+          "namespace": "Resource",
+          "object": "keto/src/",
+          "relation": ""
+        }
+      }
+    },
+    {
+      "action": "insert",
+      "relation_tuple": {
+        "namespace": "Resource",
+        "object": "keto/src/be/api/",
+        "relation": "parents",
+        "subject_set": {
+          "namespace": "Resource",
+          "object": "keto/src/be/",
+          "relation": ""
+        }
+      }
+    },
+    {
+      "action": "insert",
+      "relation_tuple": {
+        "namespace": "Resource",
+        "object": "keto/src/be/api/main.go",
+        "relation": "parents",
+        "subject_set": {
+          "namespace": "Resource",
+          "object": "keto/src/be/api/",
+          "relation": ""
+        }
+      }
+    },
+    {
+      "action": "insert",
+      "relation_tuple": {
+        "namespace": "Resource",
+        "object": "keto/",
+        "relation": "viewers",
+        "subject_set": {
+          "namespace": "Role",
+          "object": "Viewer",
+          "relation": "members"
+        }
+      }
+    },
+    {
+      "action": "insert",
+      "relation_tuple": {
+        "namespace": "Role",
+        "object": "Viewer",
+        "relation": "members",
+        "subject_set": {
+          "namespace": "Principal",
+          "object": "Kim1"
+        }
+      }
+    },
+    {
+      "action": "insert",
+      "relation_tuple": {
+        "namespace": "Role",
+        "object": "Viewer",
+        "relation": "members",
+        "subject_set": {
+          "namespace": "Principal",
+          "object": "Kim2"
+        }
+      }
+    },
+    {
+      "action": "insert",
+      "relation_tuple": {
+        "namespace": "Resource",
+        "object": "keto/src/be/",
+        "relation": "denied_viewers",
+        "subject_set": {
+          "namespace": "Principal",
+          "object": "Kim1"
+        }
+      }
+    }
+  ]
+}

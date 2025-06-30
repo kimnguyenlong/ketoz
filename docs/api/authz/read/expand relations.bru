@@ -1,0 +1,18 @@
+meta {
+  name: expand relations
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{host_read}}/relation-tuples/expand?namespace=Resource&object=keto/&relation=viewers&max-depth=1000
+  body: none
+  auth: inherit
+}
+
+params:query {
+  namespace: Resource
+  object: keto/
+  relation: viewers
+  max-depth: 1000
+}
