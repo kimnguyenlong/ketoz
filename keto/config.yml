@@ -6,6 +6,8 @@ log:
 namespaces:
   location: file:///home/ory/namespaces.ts
 
+dsn: postgres://username:password@postgres:5432/keto?sslmode=disable
+
 serve:
   read:
     host: 0.0.0.0
