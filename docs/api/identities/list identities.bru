@@ -1,11 +1,11 @@
 meta {
-  name: get namespaces
+  name: list identities
   type: http
   seq: 1
 }
 
 get {
-  url: {{keto_read}}/namespaces
+  url: {{api_host}}/identities
   body: none
   auth: inherit
 }
