@@ -1,0 +1,15 @@
+meta {
+  name: list members
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{api_host}}/roles/:id/members
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: root
+}

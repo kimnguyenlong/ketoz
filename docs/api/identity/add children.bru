@@ -1,0 +1,21 @@
+meta {
+  name: add children
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{api_host}}/identities/:id/children
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: root
+}
+
+body:json {
+  {
+    "child_id": "kimnguyenlong"
+  }
+}

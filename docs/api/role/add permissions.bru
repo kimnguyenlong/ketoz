@@ -1,0 +1,26 @@
+meta {
+  name: add permissions
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{api_host}}/roles/:id/permissions
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: root
+}
+
+body:json {
+  {
+    "permissions": [
+      {
+        "resource_id": "keto",
+        "action": "view"
+      }
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+meta {
+  name: add members
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{api_host}}/roles/:id/members
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: root
+}
+
+body:json {
+  {
+    "identities": [
+      {
+        "id": "root"
+      }
+    ]
+  }
+}

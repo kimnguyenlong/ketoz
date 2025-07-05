@@ -1,19 +1,88 @@
 package handler
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"github.com/kimnguyenlong/ketoz/internal/entity"
+	"github.com/kimnguyenlong/ketoz/internal/repository"
+)
 
 type identity struct {
+	idRepo repository.Identity
 }
 
-func NewIdentity() *identity {
-	return &identity{}
+func NewIdentity(idRepo repository.Identity) *identity {
+	return &identity{
+		idRepo: idRepo,
+	}
 }
 
 func (i *identity) RegisterRoutes(r fiber.Router) {
 	g := r.Group("/identities")
+	// Identities
+	g.Post("/", i.Create)
 	g.Get("/", i.List)
+	g.Get("/:id", i.Get)
+	// Children
+	g.Get("/:id/children", i.ListChildren)
+	g.Post("/:id/children", i.AddChild)
+	// Roles
+	g.Get("/:id/roles", i.ListRoles)
+	g.Post("/:id/roles", i.AssignToRole)
+	// Denied Permissions
+	g.Get("/:id/denied-permissions", i.ListDeniedPermissions)
+	g.Post("/:id/denied-permissions", i.AddDeniedPermission)
 }
 
 func (i *identity) List(c *fiber.Ctx) error {
-	return c.SendString("List of identities")
+	return nil
+}
+
+func (i *identity) Get(c *fiber.Ctx) error {
+	return nil
+}
+
+func (i *identity) Create(c *fiber.Ctx) error {
+	return nil
+}
+
+func (i *identity) ListChildren(c *fiber.Ctx) error {
+	list, err := i.idRepo.ListChildren(c.Context(), c.Params("id"))
+	if err != nil {
+		return responseError(c, err)
+	}
+
+	return responseRecords(c, fiber.StatusOK, list)
+}
+
+type AddChildIdentityRequest struct {
+	ChildId string `json:"child_id"`
+}
+
+func (i *identity) AddChild(c *fiber.Ctx) error {
+	req := new(AddChildIdentityRequest)
+	if err := c.BodyParser(req); err != nil {
+		return responseError(c, entity.NewInvalidParamsError(err.Error()))
+	}
+
+	if err := i.idRepo.AddChild(c.Context(), c.Params("id"), req.ChildId); err != nil {
+		return responseError(c, err)
+	}
+
+	return responseNilData(c, fiber.StatusCreated)
+}
+
+func (i *identity) ListRoles(c *fiber.Ctx) error {
+	return nil
+}
+
+func (i *identity) AssignToRole(c *fiber.Ctx) error {
+	return nil
+}
+
+func (i *identity) ListDeniedPermissions(c *fiber.Ctx) error {
+	return nil
+}
+
+func (i *identity) AddDeniedPermission(c *fiber.Ctx) error {
+	return nil
 }

@@ -11,10 +11,12 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/kimnguyenlong/ketoz/config"
 	"github.com/kimnguyenlong/ketoz/internal/handler"
+	"github.com/kimnguyenlong/ketoz/internal/repository"
+	"github.com/kimnguyenlong/ketoz/pkg/keto"
 )
 
 func main() {
-	// Set up logging
+	// Run Keto migrations
 	slog.Info("Running Keto migrations...")
 	if err := runKetoMigrations(); err != nil {
 		slog.Error("Failed to run Keto migrations", "error", err)
@@ -43,11 +45,29 @@ func main() {
 		return
 	}
 
+	keto, err := keto.NewKeto()
+	if err != nil {
+		slog.Error("Failed to init Keto client", "error", err)
+		return
+	}
+
 	app := fiber.New()
 	api := app.Group("/api")
 
-	idHandler := handler.NewIdentity()
+	idRepo := repository.NewIdentity(keto)
+	roleRepo := repository.NewRole(keto)
+	rscRepo := repository.NewResource(keto)
+	pmRepo := repository.NewPermission(keto)
+
+	idHandler := handler.NewIdentity(idRepo)
+	roleHandler := handler.NewRole(roleRepo)
+	rscHandler := handler.NewResource(rscRepo)
+	pmHandler := handler.NewPermission(pmRepo)
+
 	idHandler.RegisterRoutes(api)
+	roleHandler.RegisterRoutes(api)
+	rscHandler.RegisterRoutes(api)
+	pmHandler.RegisterRoutes(api)
 
 	go func() {
 		stop := make(chan os.Signal, 1)

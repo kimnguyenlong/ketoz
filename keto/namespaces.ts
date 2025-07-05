@@ -1,14 +1,14 @@
 import { Namespace, SubjectSet, Context } from "@ory/keto-namespace-types"
 
-class Principal implements Namespace {
+class Identity implements Namespace {
     related: {
-        members: Principal[]
+        children: Identity[]
     }
 }
 
 class Role implements Namespace {
     related: {
-        members: (Principal | SubjectSet<Principal, "members">)[]
+        members: (Identity | SubjectSet<Identity, "children">)[]
     }
 }
 
@@ -16,7 +16,7 @@ class Resource implements Namespace {
     related: {
         parents: Resource[]
         viewers: SubjectSet<Role, "members">[]
-        denied_viewers: (Principal | SubjectSet<Principal, "members">)[]
+        denied_viewers: (Identity | SubjectSet<Identity, "children">)[]
     }
 
     permits = {

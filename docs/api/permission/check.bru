@@ -1,0 +1,17 @@
+meta {
+  name: check
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{api_host}}/permissions/check?identity_id=kimnguyenlong&resource_id=keto_src&action=view
+  body: none
+  auth: inherit
+}
+
+params:query {
+  identity_id: kimnguyenlong
+  resource_id: keto_src
+  action: view
+}
