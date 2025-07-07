@@ -1,11 +1,11 @@
 meta {
-  name: list permissions
+  name: get role
   type: http
-  seq: 5
+  seq: 3
 }
 
 get {
-  url: {{api_host}}/roles/:id/permissions
+  url: {{api_host}}/roles/:id
   body: none
   auth: inherit
 }

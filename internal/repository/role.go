@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/kimnguyenlong/ketoz/internal/entity"
 	"github.com/kimnguyenlong/ketoz/pkg/keto"
@@ -37,6 +38,76 @@ func permissionToRelation(roleId string, p *entity.Permission) *rts.RelationTupl
 			},
 		},
 	}
+}
+
+func (r *role) List(ctx context.Context) ([]*entity.Role, error) {
+	req := &rts.ListRelationTuplesRequest{
+		RelationQuery: &rts.RelationQuery{
+			Namespace: util.StringPointer(keto.NamespaceRole),
+			Relation:  util.StringPointer(keto.RelationSelf),
+		},
+	}
+	res, err := r.keto.Read.ListRelationTuples(ctx, req)
+	if err != nil {
+		return nil, entity.NewInternalError(err.Error())
+	}
+
+	list := make([]*entity.Role, 0, len(res.GetRelationTuples()))
+	for _, r := range res.GetRelationTuples() {
+		list = append(list, &entity.Role{
+			Id: r.GetObject(),
+		})
+	}
+
+	return list, nil
+}
+
+func (r *role) Get(ctx context.Context, id string) (*entity.Role, error) {
+	req := &rts.CheckRequest{
+		Namespace: keto.NamespaceRole,
+		Object:    id,
+		Relation:  keto.RelationSelf,
+		Subject: &rts.Subject{
+			Ref: &rts.Subject_Id{
+				Id: id,
+			},
+		},
+	}
+	res, err := r.keto.Check.Check(ctx, req)
+	if err != nil {
+		return nil, entity.NewInternalError(err.Error())
+	}
+
+	if !res.GetAllowed() {
+		return nil, entity.NewNotFoundError(fmt.Sprintf("no role with id %s", id))
+	}
+
+	return &entity.Role{Id: id}, nil
+}
+
+func (r *role) Create(ctx context.Context, role *entity.Role) error {
+	req := &rts.TransactRelationTuplesRequest{
+		RelationTupleDeltas: []*rts.RelationTupleDelta{
+			{
+				Action: rts.RelationTupleDelta_ACTION_INSERT,
+				RelationTuple: &rts.RelationTuple{
+					Namespace: keto.NamespaceRole,
+					Object:    role.Id,
+					Relation:  keto.RelationSelf,
+					Subject: &rts.Subject{
+						Ref: &rts.Subject_Id{
+							Id: role.Id,
+						},
+					},
+				},
+			},
+		},
+	}
+	if _, err := r.keto.Write.TransactRelationTuples(ctx, req); err != nil {
+		return entity.NewInternalError(err.Error())
+	}
+
+	return nil
 }
 
 func (r *role) AddPermissions(ctx context.Context, id string, permissions []*entity.Permission) error {

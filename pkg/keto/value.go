@@ -11,5 +11,6 @@ const (
 	RelationMembers  string = "members"
 	RelationParents  string = "parents"
 	RelationViewers  string = "viewers"
+	RelationSelf     string = "self"
 	RelationEmpty    string = ""
 )

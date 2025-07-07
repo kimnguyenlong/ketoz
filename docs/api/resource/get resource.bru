@@ -1,11 +1,11 @@
 meta {
-  name: list children
+  name: get resource
   type: http
-  seq: 5
+  seq: 3
 }
 
 get {
-  url: {{api_host}}/resources/:id/children
+  url: {{api_host}}/resources/:id
   body: none
   auth: inherit
 }

@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"fmt"
-	"slices"
 
 	"github.com/kimnguyenlong/ketoz/internal/entity"
 	"github.com/kimnguyenlong/ketoz/pkg/keto"
@@ -12,7 +11,6 @@ import (
 )
 
 type resource struct {
-	list []*entity.Resource
 	keto *keto.Keto
 }
 
@@ -22,29 +20,73 @@ func NewResource(keto *keto.Keto) Resource {
 	}
 }
 
-func (r *resource) List(ctx context.Context, offset, limit int) ([]*entity.Resource, error) {
-	return r.list, nil
+func (r *resource) List(ctx context.Context) ([]*entity.Resource, error) {
+	req := &rts.ListRelationTuplesRequest{
+		RelationQuery: &rts.RelationQuery{
+			Namespace: util.StringPointer(keto.NamespaceResource),
+			Relation:  util.StringPointer(keto.RelationSelf),
+		},
+	}
+	res, err := r.keto.Read.ListRelationTuples(ctx, req)
+	if err != nil {
+		return nil, entity.NewInternalError(err.Error())
+	}
+
+	list := make([]*entity.Resource, 0, len(res.GetRelationTuples()))
+	for _, r := range res.GetRelationTuples() {
+		list = append(list, &entity.Resource{
+			Id: r.GetObject(),
+		})
+	}
+
+	return list, nil
 }
 
 func (r *resource) Get(ctx context.Context, id string) (*entity.Resource, error) {
-	idx := slices.IndexFunc(r.list, func(item *entity.Resource) bool {
-		return item.Id == id
-	})
-	if idx == -1 {
-		return nil, fmt.Errorf("resource with id %s not found", id)
+	req := &rts.CheckRequest{
+		Namespace: keto.NamespaceResource,
+		Object:    id,
+		Relation:  keto.RelationSelf,
+		Subject: &rts.Subject{
+			Ref: &rts.Subject_Id{
+				Id: id,
+			},
+		},
+	}
+	res, err := r.keto.Check.Check(ctx, req)
+	if err != nil {
+		return nil, entity.NewInternalError(err.Error())
 	}
 
-	return r.list[idx], nil
+	if !res.GetAllowed() {
+		return nil, entity.NewNotFoundError(fmt.Sprintf("no resource with id %s", id))
+	}
+
+	return &entity.Resource{Id: id}, nil
 }
 
-func (r *resource) Insert(ctx context.Context, resource *entity.Resource) error {
-	idx := slices.IndexFunc(r.list, func(item *entity.Resource) bool {
-		return item.Id == resource.Id
-	})
-	if idx != -1 {
-		return fmt.Errorf("resource with id %s already exists", resource.Id)
+func (r *resource) Create(ctx context.Context, rsc *entity.Resource) error {
+	req := &rts.TransactRelationTuplesRequest{
+		RelationTupleDeltas: []*rts.RelationTupleDelta{
+			{
+				Action: rts.RelationTupleDelta_ACTION_INSERT,
+				RelationTuple: &rts.RelationTuple{
+					Namespace: keto.NamespaceResource,
+					Object:    rsc.Id,
+					Relation:  keto.RelationSelf,
+					Subject: &rts.Subject{
+						Ref: &rts.Subject_Id{
+							Id: rsc.Id,
+						},
+					},
+				},
+			},
+		},
 	}
-	r.list = append(r.list, resource)
+	if _, err := r.keto.Write.TransactRelationTuples(ctx, req); err != nil {
+		return entity.NewInternalError(err.Error())
+	}
+
 	return nil
 }
 

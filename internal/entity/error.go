@@ -6,6 +6,7 @@ const (
 	CodeSuccess            = 0
 	CodeInternalError      = -500
 	CodeInvalidParamsError = -400
+	CodeNotFoundError      = -404
 )
 
 const (
@@ -39,5 +40,13 @@ func NewInvalidParamsError(msg string) *Error {
 		Code:     CodeInvalidParamsError,
 		Message:  msg,
 		HttpCode: http.StatusBadRequest,
+	}
+}
+
+func NewNotFoundError(msg string) *Error {
+	return &Error{
+		Code:     CodeNotFoundError,
+		Message:  msg,
+		HttpCode: http.StatusNotFound,
 	}
 }

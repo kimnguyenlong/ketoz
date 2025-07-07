@@ -27,16 +27,41 @@ func (i *resource) RegisterRoutes(r fiber.Router) {
 	g.Post("/:id/children", i.AddChild)
 }
 
-func (i *resource) List(c *fiber.Ctx) error {
-	return nil
+type CreateResourceRequest struct {
+	Id string `json:"id"`
 }
 
-func (i *resource) Get(c *fiber.Ctx) error {
-	return nil
+func (r *resource) Create(c *fiber.Ctx) error {
+	req := new(CreateResourceRequest)
+	if err := c.BodyParser(req); err != nil {
+		return responseError(c, entity.NewInvalidParamsError(err.Error()))
+	}
+
+	if err := r.rscRepo.Create(c.Context(), &entity.Resource{
+		Id: req.Id,
+	}); err != nil {
+		return responseError(c, err)
+	}
+
+	return responseNilData(c, fiber.StatusCreated)
 }
 
-func (i *resource) Create(c *fiber.Ctx) error {
-	return nil
+func (r *resource) List(c *fiber.Ctx) error {
+	list, err := r.rscRepo.List(c.Context())
+	if err != nil {
+		return responseError(c, err)
+	}
+
+	return responseRecords(c, fiber.StatusOK, list)
+}
+
+func (r *resource) Get(c *fiber.Ctx) error {
+	rsc, err := r.rscRepo.Get(c.Context(), c.Params("id"))
+	if err != nil {
+		return responseError(c, err)
+	}
+
+	return responseData(c, fiber.StatusOK, rsc)
 }
 
 func (r *resource) ListChildren(c *fiber.Ctx) error {
