@@ -7,10 +7,11 @@ const (
 )
 
 const (
-	RelationChildren string = "children"
-	RelationMembers  string = "members"
-	RelationParents  string = "parents"
-	RelationViewers  string = "viewers"
-	RelationSelf     string = "self"
-	RelationEmpty    string = ""
+	RelationChildren      string = "children"
+	RelationMembers       string = "members"
+	RelationParents       string = "parents"
+	RelationViewers       string = "viewers"
+	RelationSelf          string = "self"
+	RelationDeniedViewers string = "denied_viewers"
+	RelationEmpty         string = ""
 )

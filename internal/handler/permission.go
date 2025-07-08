@@ -19,6 +19,7 @@ func NewPermission(pmRepo repository.Permission) *permission {
 func (p *permission) RegisterRoutes(r fiber.Router) {
 	g := r.Group("/permissions")
 	g.Get("/check", p.Check)
+	g.Post("/denied-permissions", p.AddDeniedPermission)
 }
 
 type CheckRequest struct {
@@ -45,4 +46,23 @@ func (p *permission) Check(c *fiber.Ctx) error {
 	return responseData(c, fiber.StatusOK, &CheckResponse{
 		IsPermitted: isPermitted,
 	})
+}
+
+type AddDeniedPermissionRequest struct {
+	IdentityId string        `json:"identity_id"`
+	ResourceId string        `json:"resource_id"`
+	Action     entity.Action `json:"action"`
+}
+
+func (p *permission) AddDeniedPermission(c *fiber.Ctx) error {
+	req := new(AddDeniedPermissionRequest)
+	if err := c.BodyParser(req); err != nil {
+		return responseError(c, entity.NewInvalidParamsError(err.Error()))
+	}
+
+	if err := p.pmRepo.AddDeniedPermission(c.Context(), req.IdentityId, req.ResourceId, req.Action); err != nil {
+		return responseError(c, err)
+	}
+
+	return responseNilData(c, fiber.StatusCreated)
 }

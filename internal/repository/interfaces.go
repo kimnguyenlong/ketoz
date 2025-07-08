@@ -38,4 +38,5 @@ type Role interface {
 
 type Permission interface {
 	IsPermitted(ctx context.Context, identityId, resourceId string, action entity.Action) (bool, error)
+	AddDeniedPermission(ctx context.Context, identityId, resourceId string, action entity.Action) error
 }

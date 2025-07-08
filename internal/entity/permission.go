@@ -23,3 +23,7 @@ var ActionToRelation = map[Action]string{
 var RelationToAction = map[string]Action{
 	keto.RelationViewers: ActionView,
 }
+
+var DeniedActionToRelation = map[Action]string{
+	ActionView: keto.RelationDeniedViewers,
+}
