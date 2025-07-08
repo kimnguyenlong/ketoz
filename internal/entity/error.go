@@ -50,3 +50,12 @@ func NewNotFoundError(msg string) *Error {
 		HttpCode: http.StatusNotFound,
 	}
 }
+
+func IsNotFoundError(err error) bool {
+	c, ok := err.(*Error)
+	if !ok {
+		return false
+	}
+
+	return c.Code == CodeNotFoundError
+}

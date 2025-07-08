@@ -66,6 +66,14 @@ func (r *resource) Get(ctx context.Context, id string) (*entity.Resource, error)
 }
 
 func (r *resource) Create(ctx context.Context, rsc *entity.Resource) error {
+	existing, err := r.Get(ctx, rsc.Id)
+	if err != nil && !entity.IsNotFoundError(err) {
+		return err
+	}
+	if existing != nil {
+		return entity.NewInvalidParamsError(fmt.Sprintf("resource with id %s already exists", rsc.Id))
+	}
+
 	req := &rts.TransactRelationTuplesRequest{
 		RelationTupleDeltas: []*rts.RelationTupleDelta{
 			{

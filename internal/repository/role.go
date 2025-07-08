@@ -86,6 +86,14 @@ func (r *role) Get(ctx context.Context, id string) (*entity.Role, error) {
 }
 
 func (r *role) Create(ctx context.Context, role *entity.Role) error {
+	existing, err := r.Get(ctx, role.Id)
+	if err != nil && !entity.IsNotFoundError(err) {
+		return err
+	}
+	if existing != nil {
+		return entity.NewInvalidParamsError(fmt.Sprintf("role with id %s already exists", role.Id))
+	}
+
 	req := &rts.TransactRelationTuplesRequest{
 		RelationTupleDeltas: []*rts.RelationTupleDelta{
 			{
