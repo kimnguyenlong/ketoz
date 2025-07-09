@@ -231,9 +231,11 @@ func (r *role) ListMembers(ctx context.Context, id string) ([]*entity.Identity, 
 
 	list := make([]*entity.Identity, 0, len(res.GetRelationTuples()))
 	for _, r := range res.GetRelationTuples() {
-		list = append(list, &entity.Identity{
-			Id: r.GetObject(),
-		})
+		if r.GetSubject().GetSet().GetRelation() == keto.RelationEmpty {
+			list = append(list, &entity.Identity{
+				Id: r.GetSubject().GetSet().GetObject(),
+			})
+		}
 	}
 
 	return list, nil
