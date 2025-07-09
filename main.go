@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
-	"os/exec"
 	"os/signal"
 	"syscall"
 
@@ -16,40 +15,18 @@ import (
 )
 
 func main() {
-	// Run Keto migrations
-	slog.Info("Running Keto migrations...")
-	if err := runKetoMigrations(); err != nil {
-		slog.Error("Failed to run Keto migrations", "error", err)
-		return
-	}
-	slog.Info("Keto migrations completed successfully")
-
-	// Start Keto server
-	slog.Info("Starting Keto server...")
-	ketoCmd, err := runKeto()
-	defer func() {
-		if err := ketoCmd.Process.Signal(syscall.SIGTERM); err != nil {
-			slog.Error("Failed to kill Keto process", "error", err)
-		}
-		ketoCmd.Wait()
-		slog.Info("Keto server stopped gracefully")
-	}()
-	if err != nil {
-		slog.Error("Failed to start Keto", "error", err)
-		return
-	}
-
 	cfg, err := config.Load()
 	if err != nil {
 		slog.Error(err.Error())
 		return
 	}
 
-	keto, err := keto.NewKeto()
+	keto, err := keto.NewKeto(cfg.Keto)
 	if err != nil {
 		slog.Error("Failed to init Keto client", "error", err)
 		return
 	}
+	defer keto.Close()
 
 	app := fiber.New()
 	api := app.Group("/api")
@@ -83,19 +60,4 @@ func main() {
 		slog.Error("Serve HTTP requests failed", "error", err)
 		return
 	}
-}
-
-func runKetoMigrations() error {
-	ketoCmd := exec.Command("keto", "migrate", "up", "-c", "/home/ory/config.yml", "-y")
-	ketoCmd.Stdout = os.Stdout
-	ketoCmd.Stderr = os.Stderr
-	return ketoCmd.Run()
-}
-
-func runKeto() (*exec.Cmd, error) {
-	ketoCmd := exec.Command("keto", "serve", "-c", "/home/ory/config.yml")
-	ketoCmd.Stdout = os.Stdout
-	ketoCmd.Stderr = os.Stderr
-	err := ketoCmd.Start()
-	return ketoCmd, err
 }

@@ -3,11 +3,13 @@ package config
 import (
 	"context"
 
+	"github.com/kimnguyenlong/ketoz/pkg/keto"
 	"github.com/sethvargo/go-envconfig"
 )
 
 type Config struct {
 	Service ServiceConfig `env:",prefix=SERVICE_"`
+	Keto    keto.Config   `env:",prefix=KETO_"`
 }
 
 type ServiceConfig struct {

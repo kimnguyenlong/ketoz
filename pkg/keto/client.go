@@ -8,6 +8,12 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
+type Config struct {
+	Host      string `env:"HOST"`
+	ReadPort  int    `env:"READ_PORT, default=4466"`
+	WritePort int    `env:"WRITE_PORT, default=4467"`
+}
+
 type Keto struct {
 	ReadConn  *grpc.ClientConn
 	WriteConn *grpc.ClientConn
@@ -16,13 +22,19 @@ type Keto struct {
 	Write     rts.WriteServiceClient
 }
 
-func NewKeto() (*Keto, error) {
-	readConn, err := grpc.NewClient("127.0.0.1:4466", grpc.WithTransportCredentials(insecure.NewCredentials()))
+func NewKeto(cfg Config) (*Keto, error) {
+	readConn, err := grpc.NewClient(
+		fmt.Sprintf("%s:%v", cfg.Host, cfg.ReadPort),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("new grpc client: %w", err)
 	}
 
-	writeConn, err := grpc.NewClient("127.0.0.1:4467", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	writeConn, err := grpc.NewClient(
+		fmt.Sprintf("%s:%v", cfg.Host, cfg.WritePort),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("new grpc client: %w", err)
 	}
@@ -34,4 +46,9 @@ func NewKeto() (*Keto, error) {
 		Check:     rts.NewCheckServiceClient(readConn),
 		Write:     rts.NewWriteServiceClient(writeConn),
 	}, nil
+}
+
+func (k *Keto) Close() {
+	k.ReadConn.Close()
+	k.WriteConn.Close()
 }
