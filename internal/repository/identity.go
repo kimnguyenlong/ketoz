@@ -101,7 +101,7 @@ func (i *identity) Create(ctx context.Context, identity *entity.Identity) error 
 func (i *identity) AddChild(ctx context.Context, parentId, childId string) error {
 	req := &rts.TransactRelationTuplesRequest{
 		RelationTupleDeltas: []*rts.RelationTupleDelta{
-			{
+			{ // parent -> child
 				Action: rts.RelationTupleDelta_ACTION_INSERT,
 				RelationTuple: &rts.RelationTuple{
 					Namespace: keto.NamespaceIdentity,
@@ -113,6 +113,23 @@ func (i *identity) AddChild(ctx context.Context, parentId, childId string) error
 								Namespace: keto.NamespaceIdentity,
 								Object:    childId,
 								Relation:  keto.RelationEmpty,
+							},
+						},
+					},
+				},
+			},
+			{ // parent -> children of child
+				Action: rts.RelationTupleDelta_ACTION_INSERT,
+				RelationTuple: &rts.RelationTuple{
+					Namespace: keto.NamespaceIdentity,
+					Object:    parentId,
+					Relation:  keto.RelationChildren,
+					Subject: &rts.Subject{
+						Ref: &rts.Subject_Set{
+							Set: &rts.SubjectSet{
+								Namespace: keto.NamespaceIdentity,
+								Object:    childId,
+								Relation:  keto.RelationChildren,
 							},
 						},
 					},
@@ -142,9 +159,11 @@ func (i *identity) ListChildren(ctx context.Context, id string) ([]*entity.Ident
 
 	list := make([]*entity.Identity, 0, len(res.GetRelationTuples()))
 	for _, r := range res.GetRelationTuples() {
-		list = append(list, &entity.Identity{
-			Id: r.GetSubject().GetSet().GetObject(),
-		})
+		if r.GetSubject().GetSet().GetRelation() == keto.RelationEmpty {
+			list = append(list, &entity.Identity{
+				Id: r.GetSubject().GetSet().GetObject(),
+			})
+		}
 	}
 
 	return list, nil

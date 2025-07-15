@@ -5,14 +5,14 @@ meta {
 }
 
 get {
-  url: {{keto_read}}/relation-tuples/expand?namespace=Resource&object=keto/&relation=viewers&max-depth=1000
+  url: {{keto_read}}/relation-tuples/expand?namespace=Resource&object=src&relation=parents&max-depth=1000
   body: none
   auth: inherit
 }
 
 params:query {
   namespace: Resource
-  object: keto/
-  relation: viewers
+  object: src
+  relation: parents
   max-depth: 1000
 }
