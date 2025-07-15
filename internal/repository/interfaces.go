@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/kimnguyenlong/ketoz/internal/entity"
+	"github.com/kimnguyenlong/ketoz/pkg/keto"
 )
 
 type Identity interface {
@@ -37,6 +38,6 @@ type Role interface {
 }
 
 type Permission interface {
-	IsPermitted(ctx context.Context, identityId, resourceId string, action entity.Action) (bool, error)
-	AddDeniedPermission(ctx context.Context, identityId, resourceId string, action entity.Action) error
+	IsPermitted(ctx context.Context, identityId, resourceId string, action keto.Action) (bool, error)
+	AddDeniedPermission(ctx context.Context, identityId, resourceId string, action keto.Action) error
 }

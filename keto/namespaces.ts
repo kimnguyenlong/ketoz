@@ -28,7 +28,7 @@ class Resource implements Namespace {
             this.permits.allow_view(ctx),
         allow_view: (ctx: Context): boolean =>
             this.related.viewers.includes(ctx.subject) ||
-            this.related.parents.traverse((p) => p.permits.view(ctx)),
+            this.related.parents.traverse((p) => p.permits.allow_view(ctx)),
         deny_view: (ctx: Context): boolean =>
             this.related.denied_viewers.includes(ctx.subject) ||
             this.related.parents.traverse((p) => p.permits.deny_view(ctx))

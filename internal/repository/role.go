@@ -27,7 +27,7 @@ func permissionToRelation(roleId string, p *entity.Permission) *rts.RelationTupl
 	return &rts.RelationTuple{
 		Namespace: keto.NamespaceResource,
 		Object:    p.ResourceId,
-		Relation:  entity.ActionToRelation[p.Action],
+		Relation:  keto.ActionToRelation[p.Action],
 		Subject: &rts.Subject{
 			Ref: &rts.Subject_Set{
 				Set: &rts.SubjectSet{
@@ -160,7 +160,7 @@ func (r *role) ListPermissions(ctx context.Context, id string) ([]*entity.Permis
 	for _, r := range res.GetRelationTuples() {
 		list = append(list, &entity.Permission{
 			ResourceId: r.GetObject(),
-			Action:     entity.RelationToAction[r.GetRelation()],
+			Action:     keto.RelationToAction[r.GetRelation()],
 		})
 	}
 

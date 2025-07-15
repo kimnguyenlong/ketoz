@@ -18,7 +18,7 @@ func NewPermission(keto *keto.Keto) Permission {
 	}
 }
 
-func (p *permission) IsPermitted(ctx context.Context, identityId, resourceId string, action entity.Action) (bool, error) {
+func (p *permission) IsPermitted(ctx context.Context, identityId, resourceId string, action keto.Action) (bool, error) {
 	req := &rts.CheckRequest{
 		Namespace: keto.NamespaceResource,
 		Object:    resourceId,
@@ -41,14 +41,14 @@ func (p *permission) IsPermitted(ctx context.Context, identityId, resourceId str
 	return res.GetAllowed(), nil
 }
 
-func (p *permission) AddDeniedPermission(ctx context.Context, identityId, resourceId string, action entity.Action) error {
+func (p *permission) AddDeniedPermission(ctx context.Context, identityId, resourceId string, action keto.Action) error {
 	relations := make([]*rts.RelationTupleDelta, 0, 2)
 	id := &rts.RelationTupleDelta{ // for the identity
 		Action: rts.RelationTupleDelta_ACTION_INSERT,
 		RelationTuple: &rts.RelationTuple{
 			Namespace: keto.NamespaceResource,
 			Object:    resourceId,
-			Relation:  entity.DeniedActionToRelation[action],
+			Relation:  keto.DeniedActionToRelation[action],
 			Subject: &rts.Subject{
 				Ref: &rts.Subject_Set{
 					Set: &rts.SubjectSet{
@@ -65,7 +65,7 @@ func (p *permission) AddDeniedPermission(ctx context.Context, identityId, resour
 		RelationTuple: &rts.RelationTuple{
 			Namespace: keto.NamespaceResource,
 			Object:    resourceId,
-			Relation:  entity.DeniedActionToRelation[action],
+			Relation:  keto.DeniedActionToRelation[action],
 			Subject: &rts.Subject{
 				Ref: &rts.Subject_Set{
 					Set: &rts.SubjectSet{
