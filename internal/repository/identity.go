@@ -101,7 +101,7 @@ func (i *identity) Create(ctx context.Context, identity *entity.Identity) error 
 func (i *identity) AddChild(ctx context.Context, parentId, childId string) error {
 	req := &rts.TransactRelationTuplesRequest{
 		RelationTupleDeltas: []*rts.RelationTupleDelta{
-			{ // parent -> child
+			{ // child -> parent
 				Action: rts.RelationTupleDelta_ACTION_INSERT,
 				RelationTuple: &rts.RelationTuple{
 					Namespace: keto.NamespaceIdentity.String(),
@@ -118,7 +118,7 @@ func (i *identity) AddChild(ctx context.Context, parentId, childId string) error
 					},
 				},
 			},
-			{ // parent -> children of child
+			{ // children of child -> parent
 				Action: rts.RelationTupleDelta_ACTION_INSERT,
 				RelationTuple: &rts.RelationTuple{
 					Namespace: keto.NamespaceIdentity.String(),
