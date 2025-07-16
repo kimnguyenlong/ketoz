@@ -25,12 +25,6 @@ func (i *identity) RegisterRoutes(r fiber.Router) {
 	// Children
 	g.Get("/:id/children", i.ListChildren)
 	g.Post("/:id/children", i.AddChild)
-	// Roles
-	g.Get("/:id/roles", i.ListRoles)
-	g.Post("/:id/roles", i.AssignToRole)
-	// Denied Permissions
-	g.Get("/:id/denied-permissions", i.ListDeniedPermissions)
-	g.Post("/:id/denied-permissions", i.AddDeniedPermission)
 }
 
 type CreateIdentityRequest struct {
@@ -94,20 +88,4 @@ func (i *identity) AddChild(c *fiber.Ctx) error {
 	}
 
 	return responseNilData(c, fiber.StatusCreated)
-}
-
-func (i *identity) ListRoles(c *fiber.Ctx) error {
-	return nil
-}
-
-func (i *identity) AssignToRole(c *fiber.Ctx) error {
-	return nil
-}
-
-func (i *identity) ListDeniedPermissions(c *fiber.Ctx) error {
-	return nil
-}
-
-func (i *identity) AddDeniedPermission(c *fiber.Ctx) error {
-	return nil
 }
