@@ -26,7 +26,7 @@ type Resource interface {
 }
 
 type Permission interface {
-	GrantPermission(ctx context.Context, identityId, resourceId string, action keto.Action) error
-	DenyPermission(ctx context.Context, identityId, resourceId string, action keto.Action) error
+	GrantPermission(ctx context.Context, identityId, resourceId string, permission keto.Permission) error
+	DenyPermission(ctx context.Context, identityId, resourceId string, permission keto.Permission) error
 	IsPermitted(ctx context.Context, identityId, resourceId string, action keto.Action) (bool, error)
 }

@@ -25,9 +25,9 @@ func (p *permission) RegisterRoutes(r fiber.Router) {
 }
 
 type GrantPermissionRequest struct {
-	IdentityId string      `json:"identity_id"`
-	ResourceId string      `json:"resource_id"`
-	Action     keto.Action `json:"action"`
+	IdentityId string          `json:"identity_id"`
+	ResourceId string          `json:"resource_id"`
+	Permission keto.Permission `json:"permission"`
 }
 
 func (p *permission) GrantPermission(c *fiber.Ctx) error {
@@ -36,7 +36,7 @@ func (p *permission) GrantPermission(c *fiber.Ctx) error {
 		return responseError(c, entity.NewInvalidParamsError(err.Error()))
 	}
 
-	if err := p.pmRepo.GrantPermission(c.Context(), req.IdentityId, req.ResourceId, req.Action); err != nil {
+	if err := p.pmRepo.GrantPermission(c.Context(), req.IdentityId, req.ResourceId, req.Permission); err != nil {
 		return responseError(c, err)
 	}
 
@@ -44,9 +44,9 @@ func (p *permission) GrantPermission(c *fiber.Ctx) error {
 }
 
 type DenyPermissionRequest struct {
-	IdentityId string      `json:"identity_id"`
-	ResourceId string      `json:"resource_id"`
-	Action     keto.Action `json:"action"`
+	IdentityId string          `json:"identity_id"`
+	ResourceId string          `json:"resource_id"`
+	Permission keto.Permission `json:"permission"`
 }
 
 func (p *permission) DenyPermission(c *fiber.Ctx) error {
@@ -55,7 +55,7 @@ func (p *permission) DenyPermission(c *fiber.Ctx) error {
 		return responseError(c, entity.NewInvalidParamsError(err.Error()))
 	}
 
-	if err := p.pmRepo.DenyPermission(c.Context(), req.IdentityId, req.ResourceId, req.Action); err != nil {
+	if err := p.pmRepo.DenyPermission(c.Context(), req.IdentityId, req.ResourceId, req.Permission); err != nil {
 		return responseError(c, err)
 	}
 

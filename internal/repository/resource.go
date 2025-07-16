@@ -23,8 +23,8 @@ func NewResource(keto *keto.Keto) Resource {
 func (r *resource) List(ctx context.Context) ([]*entity.Resource, error) {
 	req := &rts.ListRelationTuplesRequest{
 		RelationQuery: &rts.RelationQuery{
-			Namespace: util.StringPointer(keto.NamespaceResource),
-			Relation:  util.StringPointer(keto.RelationSelf),
+			Namespace: util.StringPointer(keto.NamespaceResource.String()),
+			Relation:  util.StringPointer(keto.RelationSelf.String()),
 		},
 	}
 	res, err := r.keto.Read.ListRelationTuples(ctx, req)
@@ -44,9 +44,9 @@ func (r *resource) List(ctx context.Context) ([]*entity.Resource, error) {
 
 func (r *resource) Get(ctx context.Context, id string) (*entity.Resource, error) {
 	req := &rts.CheckRequest{
-		Namespace: keto.NamespaceResource,
+		Namespace: keto.NamespaceResource.String(),
 		Object:    id,
-		Relation:  keto.RelationSelf,
+		Relation:  keto.RelationSelf.String(),
 		Subject: &rts.Subject{
 			Ref: &rts.Subject_Id{
 				Id: id,
@@ -79,9 +79,9 @@ func (r *resource) Create(ctx context.Context, rsc *entity.Resource) error {
 			{
 				Action: rts.RelationTupleDelta_ACTION_INSERT,
 				RelationTuple: &rts.RelationTuple{
-					Namespace: keto.NamespaceResource,
+					Namespace: keto.NamespaceResource.String(),
 					Object:    rsc.Id,
-					Relation:  keto.RelationSelf,
+					Relation:  keto.RelationSelf.String(),
 					Subject: &rts.Subject{
 						Ref: &rts.Subject_Id{
 							Id: rsc.Id,
@@ -104,15 +104,15 @@ func (r *resource) AddChild(ctx context.Context, parentId, childId string) error
 			{
 				Action: rts.RelationTupleDelta_ACTION_INSERT,
 				RelationTuple: &rts.RelationTuple{
-					Namespace: keto.NamespaceResource,
+					Namespace: keto.NamespaceResource.String(),
 					Object:    childId,
-					Relation:  keto.RelationParents,
+					Relation:  keto.RelationParents.String(),
 					Subject: &rts.Subject{
 						Ref: &rts.Subject_Set{
 							Set: &rts.SubjectSet{
-								Namespace: keto.NamespaceResource,
+								Namespace: keto.NamespaceResource.String(),
 								Object:    parentId,
-								Relation:  keto.RelationEmpty,
+								Relation:  keto.RelationEmpty.String(),
 							},
 						},
 					},
@@ -130,14 +130,14 @@ func (r *resource) AddChild(ctx context.Context, parentId, childId string) error
 func (r *resource) ListChildren(ctx context.Context, id string) ([]*entity.Resource, error) {
 	req := &rts.ListRelationTuplesRequest{
 		RelationQuery: &rts.RelationQuery{
-			Namespace: util.StringPointer(keto.NamespaceResource),
-			Relation:  util.StringPointer(keto.RelationParents),
+			Namespace: util.StringPointer(keto.NamespaceResource.String()),
+			Relation:  util.StringPointer(keto.RelationParents.String()),
 			Subject: &rts.Subject{
 				Ref: &rts.Subject_Set{
 					Set: &rts.SubjectSet{
-						Namespace: keto.NamespaceResource,
+						Namespace: keto.NamespaceResource.String(),
 						Object:    id,
-						Relation:  keto.RelationEmpty,
+						Relation:  keto.RelationEmpty.String(),
 					},
 				},
 			},

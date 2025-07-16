@@ -18,21 +18,21 @@ func NewPermission(keto *keto.Keto) Permission {
 	}
 }
 
-func (p *permission) GrantPermission(ctx context.Context, identityId, resourceId string, action keto.Action) error {
+func (p *permission) GrantPermission(ctx context.Context, identityId, resourceId string, permission keto.Permission) error {
 	req := &rts.TransactRelationTuplesRequest{
 		RelationTupleDeltas: []*rts.RelationTupleDelta{
 			{ // resource -> identity
 				Action: rts.RelationTupleDelta_ACTION_INSERT,
 				RelationTuple: &rts.RelationTuple{
-					Namespace: keto.NamespaceResource,
+					Namespace: keto.NamespaceResource.String(),
 					Object:    resourceId,
-					Relation:  keto.ActionToRelation[action],
+					Relation:  keto.PermissionToRelation[permission].String(),
 					Subject: &rts.Subject{
 						Ref: &rts.Subject_Set{
 							Set: &rts.SubjectSet{
-								Namespace: keto.NamespaceIdentity,
+								Namespace: keto.NamespaceIdentity.String(),
 								Object:    identityId,
-								Relation:  keto.RelationEmpty,
+								Relation:  keto.RelationEmpty.String(),
 							},
 						},
 					},
@@ -41,15 +41,15 @@ func (p *permission) GrantPermission(ctx context.Context, identityId, resourceId
 			{ // resource -> children of identity
 				Action: rts.RelationTupleDelta_ACTION_INSERT,
 				RelationTuple: &rts.RelationTuple{
-					Namespace: keto.NamespaceResource,
+					Namespace: keto.NamespaceResource.String(),
 					Object:    resourceId,
-					Relation:  keto.ActionToRelation[action],
+					Relation:  keto.PermissionToRelation[permission].String(),
 					Subject: &rts.Subject{
 						Ref: &rts.Subject_Set{
 							Set: &rts.SubjectSet{
-								Namespace: keto.NamespaceIdentity,
+								Namespace: keto.NamespaceIdentity.String(),
 								Object:    identityId,
-								Relation:  keto.RelationChildren,
+								Relation:  keto.RelationChildren.String(),
 							},
 						},
 					},
@@ -64,20 +64,20 @@ func (p *permission) GrantPermission(ctx context.Context, identityId, resourceId
 	return nil
 }
 
-func (p *permission) DenyPermission(ctx context.Context, identityId, resourceId string, action keto.Action) error {
+func (p *permission) DenyPermission(ctx context.Context, identityId, resourceId string, permission keto.Permission) error {
 	relations := make([]*rts.RelationTupleDelta, 0, 2)
 	id := &rts.RelationTupleDelta{ // for the identity
 		Action: rts.RelationTupleDelta_ACTION_INSERT,
 		RelationTuple: &rts.RelationTuple{
-			Namespace: keto.NamespaceResource,
+			Namespace: keto.NamespaceResource.String(),
 			Object:    resourceId,
-			Relation:  keto.DeniedActionToRelation[action],
+			Relation:  keto.DeniedPermissionToRelation[permission].String(),
 			Subject: &rts.Subject{
 				Ref: &rts.Subject_Set{
 					Set: &rts.SubjectSet{
-						Namespace: keto.NamespaceIdentity,
+						Namespace: keto.NamespaceIdentity.String(),
 						Object:    identityId,
-						Relation:  keto.RelationEmpty,
+						Relation:  keto.RelationEmpty.String(),
 					},
 				},
 			},
@@ -86,15 +86,15 @@ func (p *permission) DenyPermission(ctx context.Context, identityId, resourceId 
 	children := &rts.RelationTupleDelta{ // for the children of the identity
 		Action: rts.RelationTupleDelta_ACTION_INSERT,
 		RelationTuple: &rts.RelationTuple{
-			Namespace: keto.NamespaceResource,
+			Namespace: keto.NamespaceResource.String(),
 			Object:    resourceId,
-			Relation:  keto.DeniedActionToRelation[action],
+			Relation:  keto.DeniedPermissionToRelation[permission].String(),
 			Subject: &rts.Subject{
 				Ref: &rts.Subject_Set{
 					Set: &rts.SubjectSet{
-						Namespace: keto.NamespaceIdentity,
+						Namespace: keto.NamespaceIdentity.String(),
 						Object:    identityId,
-						Relation:  keto.RelationChildren,
+						Relation:  keto.RelationChildren.String(),
 					},
 				},
 			},
@@ -113,15 +113,15 @@ func (p *permission) DenyPermission(ctx context.Context, identityId, resourceId 
 
 func (p *permission) IsPermitted(ctx context.Context, identityId, resourceId string, action keto.Action) (bool, error) {
 	req := &rts.CheckRequest{
-		Namespace: keto.NamespaceResource,
+		Namespace: keto.NamespaceResource.String(),
 		Object:    resourceId,
-		Relation:  string(action),
+		Relation:  action.String(),
 		Subject: &rts.Subject{
 			Ref: &rts.Subject_Set{
 				Set: &rts.SubjectSet{
-					Namespace: keto.NamespaceIdentity,
+					Namespace: keto.NamespaceIdentity.String(),
 					Object:    identityId,
-					Relation:  keto.RelationEmpty,
+					Relation:  keto.RelationEmpty.String(),
 				},
 			},
 		},
