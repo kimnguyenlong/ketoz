@@ -1,17 +1,17 @@
 meta {
   name: check
   type: http
-  seq: 1
+  seq: 3
 }
 
 get {
-  url: {{api_host}}/permissions/check?identity_id=kim&resource_id=src&action=view
+  url: {{api_host}}/permissions/check?identity_id=swe&action=view&resource_id=projects
   body: none
   auth: inherit
 }
 
 params:query {
-  identity_id: kim
-  resource_id: src
+  identity_id: swe
   action: view
+  resource_id: projects
 }

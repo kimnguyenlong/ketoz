@@ -18,30 +18,53 @@ func NewPermission(keto *keto.Keto) Permission {
 	}
 }
 
-func (p *permission) IsPermitted(ctx context.Context, identityId, resourceId string, action keto.Action) (bool, error) {
-	req := &rts.CheckRequest{
-		Namespace: keto.NamespaceResource,
-		Object:    resourceId,
-		Relation:  string(action),
-		Subject: &rts.Subject{
-			Ref: &rts.Subject_Set{
-				Set: &rts.SubjectSet{
-					Namespace: keto.NamespaceIdentity,
-					Object:    identityId,
-					Relation:  keto.RelationEmpty,
+func (p *permission) GrantPermission(ctx context.Context, identityId, resourceId string, action keto.Action) error {
+	req := &rts.TransactRelationTuplesRequest{
+		RelationTupleDeltas: []*rts.RelationTupleDelta{
+			{ // resource -> identity
+				Action: rts.RelationTupleDelta_ACTION_INSERT,
+				RelationTuple: &rts.RelationTuple{
+					Namespace: keto.NamespaceResource,
+					Object:    resourceId,
+					Relation:  keto.ActionToRelation[action],
+					Subject: &rts.Subject{
+						Ref: &rts.Subject_Set{
+							Set: &rts.SubjectSet{
+								Namespace: keto.NamespaceIdentity,
+								Object:    identityId,
+								Relation:  keto.RelationEmpty,
+							},
+						},
+					},
+				},
+			},
+			{ // resource -> children of identity
+				Action: rts.RelationTupleDelta_ACTION_INSERT,
+				RelationTuple: &rts.RelationTuple{
+					Namespace: keto.NamespaceResource,
+					Object:    resourceId,
+					Relation:  keto.ActionToRelation[action],
+					Subject: &rts.Subject{
+						Ref: &rts.Subject_Set{
+							Set: &rts.SubjectSet{
+								Namespace: keto.NamespaceIdentity,
+								Object:    identityId,
+								Relation:  keto.RelationChildren,
+							},
+						},
+					},
 				},
 			},
 		},
 	}
-	res, err := p.keto.Check.Check(ctx, req)
-	if err != nil {
-		return false, entity.NewInternalError(err.Error())
+	if _, err := p.keto.Write.TransactRelationTuples(ctx, req); err != nil {
+		return entity.NewInternalError(err.Error())
 	}
 
-	return res.GetAllowed(), nil
+	return nil
 }
 
-func (p *permission) AddDeniedPermission(ctx context.Context, identityId, resourceId string, action keto.Action) error {
+func (p *permission) DenyPermission(ctx context.Context, identityId, resourceId string, action keto.Action) error {
 	relations := make([]*rts.RelationTupleDelta, 0, 2)
 	id := &rts.RelationTupleDelta{ // for the identity
 		Action: rts.RelationTupleDelta_ACTION_INSERT,
@@ -86,4 +109,27 @@ func (p *permission) AddDeniedPermission(ctx context.Context, identityId, resour
 	}
 
 	return nil
+}
+
+func (p *permission) IsPermitted(ctx context.Context, identityId, resourceId string, action keto.Action) (bool, error) {
+	req := &rts.CheckRequest{
+		Namespace: keto.NamespaceResource,
+		Object:    resourceId,
+		Relation:  string(action),
+		Subject: &rts.Subject{
+			Ref: &rts.Subject_Set{
+				Set: &rts.SubjectSet{
+					Namespace: keto.NamespaceIdentity,
+					Object:    identityId,
+					Relation:  keto.RelationEmpty,
+				},
+			},
+		},
+	}
+	res, err := p.keto.Check.Check(ctx, req)
+	if err != nil {
+		return false, entity.NewInternalError(err.Error())
+	}
+
+	return res.GetAllowed(), nil
 }

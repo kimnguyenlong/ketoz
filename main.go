@@ -32,17 +32,14 @@ func main() {
 	api := app.Group("/api")
 
 	idRepo := repository.NewIdentity(keto)
-	roleRepo := repository.NewRole(keto)
 	rscRepo := repository.NewResource(keto)
 	pmRepo := repository.NewPermission(keto)
 
 	idHandler := handler.NewIdentity(idRepo)
-	roleHandler := handler.NewRole(roleRepo)
 	rscHandler := handler.NewResource(rscRepo)
 	pmHandler := handler.NewPermission(pmRepo)
 
 	idHandler.RegisterRoutes(api)
-	roleHandler.RegisterRoutes(api)
 	rscHandler.RegisterRoutes(api)
 	pmHandler.RegisterRoutes(api)
 

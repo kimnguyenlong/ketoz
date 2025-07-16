@@ -1,26 +1,19 @@
-import { Namespace, SubjectSet, Context } from "@ory/keto-namespace-types"
+import { Context, Namespace, SubjectSet } from "@ory/keto-namespace-types";
 
 class Identity implements Namespace {
     related: {
-        self: Identity[]
-        children: Identity[]
-    }
-}
-
-class Role implements Namespace {
-    related: {
-        self: Role[]
-        members: (Identity | SubjectSet<Identity, "children">)[]
-    }
+        self: Identity[];
+        children: Identity[];
+    };
 }
 
 class Resource implements Namespace {
     related: {
-        self: Resource[]
-        parents: Resource[]
-        viewers: SubjectSet<Role, "members">[]
-        denied_viewers: (Identity | SubjectSet<Identity, "children">)[]
-    }
+        self: Resource[];
+        parents: Resource[];
+        viewers: (Identity | SubjectSet<Identity, "children">)[];
+        denied_viewers: (Identity | SubjectSet<Identity, "children">)[];
+    };
 
     permits = {
         view: (ctx: Context): boolean =>
@@ -31,7 +24,6 @@ class Resource implements Namespace {
             this.related.parents.traverse((p) => p.permits.allow_view(ctx)),
         deny_view: (ctx: Context): boolean =>
             this.related.denied_viewers.includes(ctx.subject) ||
-            this.related.parents.traverse((p) => p.permits.deny_view(ctx))
-    }
+            this.related.parents.traverse((p) => p.permits.deny_view(ctx)),
+    };
 }
-

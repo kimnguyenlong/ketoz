@@ -19,8 +19,47 @@ func NewPermission(pmRepo repository.Permission) *permission {
 
 func (p *permission) RegisterRoutes(r fiber.Router) {
 	g := r.Group("/permissions")
+	g.Post("/granted", p.GrantPermission)
+	g.Post("/denied", p.DenyPermission)
 	g.Get("/check", p.Check)
-	g.Post("/denied-permissions", p.AddDeniedPermission)
+}
+
+type GrantPermissionRequest struct {
+	IdentityId string      `json:"identity_id"`
+	ResourceId string      `json:"resource_id"`
+	Action     keto.Action `json:"action"`
+}
+
+func (p *permission) GrantPermission(c *fiber.Ctx) error {
+	req := new(GrantPermissionRequest)
+	if err := c.BodyParser(req); err != nil {
+		return responseError(c, entity.NewInvalidParamsError(err.Error()))
+	}
+
+	if err := p.pmRepo.GrantPermission(c.Context(), req.IdentityId, req.ResourceId, req.Action); err != nil {
+		return responseError(c, err)
+	}
+
+	return responseNilData(c, fiber.StatusCreated)
+}
+
+type DenyPermissionRequest struct {
+	IdentityId string      `json:"identity_id"`
+	ResourceId string      `json:"resource_id"`
+	Action     keto.Action `json:"action"`
+}
+
+func (p *permission) DenyPermission(c *fiber.Ctx) error {
+	req := new(DenyPermissionRequest)
+	if err := c.BodyParser(req); err != nil {
+		return responseError(c, entity.NewInvalidParamsError(err.Error()))
+	}
+
+	if err := p.pmRepo.DenyPermission(c.Context(), req.IdentityId, req.ResourceId, req.Action); err != nil {
+		return responseError(c, err)
+	}
+
+	return responseNilData(c, fiber.StatusCreated)
 }
 
 type CheckRequest struct {
@@ -47,23 +86,4 @@ func (p *permission) Check(c *fiber.Ctx) error {
 	return responseData(c, fiber.StatusOK, &CheckResponse{
 		IsPermitted: isPermitted,
 	})
-}
-
-type AddDeniedPermissionRequest struct {
-	IdentityId string      `json:"identity_id"`
-	ResourceId string      `json:"resource_id"`
-	Action     keto.Action `json:"action"`
-}
-
-func (p *permission) AddDeniedPermission(c *fiber.Ctx) error {
-	req := new(AddDeniedPermissionRequest)
-	if err := c.BodyParser(req); err != nil {
-		return responseError(c, entity.NewInvalidParamsError(err.Error()))
-	}
-
-	if err := p.pmRepo.AddDeniedPermission(c.Context(), req.IdentityId, req.ResourceId, req.Action); err != nil {
-		return responseError(c, err)
-	}
-
-	return responseNilData(c, fiber.StatusCreated)
 }

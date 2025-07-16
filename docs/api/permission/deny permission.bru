@@ -1,0 +1,19 @@
+meta {
+  name: deny permission
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{api_host}}/permissions/denied
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "identity_id": "swe",
+    "resource_id": "projects",
+    "action": "view"
+  }
+}
