@@ -5,17 +5,17 @@ meta {
 }
 
 post {
-  url: {{api_host}}/resources/:id/children
+  url: {{api_base_url}}/identities/:id/children
   body: json
   auth: inherit
 }
 
 params:path {
-  id: projects
+  id: swe
 }
 
 body:json {
   {
-    "child_id": "projects_iam"
+    "child_id": "backend"
   }
 }

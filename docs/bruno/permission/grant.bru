@@ -1,11 +1,11 @@
 meta {
-  name: grant permission
+  name: grant
   type: http
   seq: 1
 }
 
 post {
-  url: {{api_host}}/permissions/granted
+  url: {{api_base_url}}/permissions/granted
   body: json
   auth: inherit
 }

@@ -1,15 +1,15 @@
 meta {
-  name: get identity
+  name: get
   type: http
   seq: 3
 }
 
 get {
-  url: {{api_host}}/identities/:id
+  url: {{api_base_url}}/resources/:id
   body: none
   auth: inherit
 }
 
 params:path {
-  id: swe
+  id: projects
 }

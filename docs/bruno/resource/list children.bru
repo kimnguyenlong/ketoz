@@ -5,11 +5,11 @@ meta {
 }
 
 get {
-  url: {{api_host}}/identities/:id/children
+  url: {{api_base_url}}/resources/:id/children
   body: none
   auth: inherit
 }
 
 params:path {
-  id: swe
+  id: projects
 }

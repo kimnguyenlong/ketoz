@@ -1,17 +1,17 @@
 meta {
-  name: create identity
+  name: create
   type: http
   seq: 1
 }
 
 post {
-  url: {{api_host}}/identities
+  url: {{api_base_url}}/resources
   body: json
   auth: inherit
 }
 
 body:json {
   {
-    "id": "swe2"
+    "id": "projects"
   }
 }
