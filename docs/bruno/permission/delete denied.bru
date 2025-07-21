@@ -1,10 +1,10 @@
 meta {
-  name: deny
+  name: delete denied
   type: http
-  seq: 3
+  seq: 4
 }
 
-post {
+delete {
   url: {{api_base_url}}/permissions/denied
   body: json
   auth: inherit

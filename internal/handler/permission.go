@@ -20,7 +20,9 @@ func NewPermission(pmRepo repository.Permission) *permission {
 func (p *permission) RegisterRoutes(r fiber.Router) {
 	g := r.Group("/permissions")
 	g.Post("/granted", p.GrantPermission)
+	g.Delete("/granted", p.RevokePermission)
 	g.Post("/denied", p.DenyPermission)
+	g.Delete("/denied", p.DeleteDeniedPermission)
 	g.Get("/check", p.Check)
 }
 
@@ -40,7 +42,26 @@ func (p *permission) GrantPermission(c *fiber.Ctx) error {
 		return responseError(c, err)
 	}
 
-	return responseNilData(c, fiber.StatusCreated)
+	return responseNilData(c, fiber.StatusOK)
+}
+
+type RevokePermissionRequest struct {
+	IdentityId string          `json:"identity_id"`
+	ResourceId string          `json:"resource_id"`
+	Permission keto.Permission `json:"permission"`
+}
+
+func (p *permission) RevokePermission(c *fiber.Ctx) error {
+	req := new(RevokePermissionRequest)
+	if err := c.BodyParser(req); err != nil {
+		return responseError(c, entity.NewInvalidParamsError(err.Error()))
+	}
+
+	if err := p.pmRepo.RevokePermission(c.Context(), req.IdentityId, req.ResourceId, req.Permission); err != nil {
+		return responseError(c, err)
+	}
+
+	return responseNilData(c, fiber.StatusOK)
 }
 
 type DenyPermissionRequest struct {
@@ -59,7 +80,26 @@ func (p *permission) DenyPermission(c *fiber.Ctx) error {
 		return responseError(c, err)
 	}
 
-	return responseNilData(c, fiber.StatusCreated)
+	return responseNilData(c, fiber.StatusOK)
+}
+
+type DeleteDeniedPermissionRequest struct {
+	IdentityId string          `json:"identity_id"`
+	ResourceId string          `json:"resource_id"`
+	Permission keto.Permission `json:"permission"`
+}
+
+func (p *permission) DeleteDeniedPermission(c *fiber.Ctx) error {
+	req := new(DeleteDeniedPermissionRequest)
+	if err := c.BodyParser(req); err != nil {
+		return responseError(c, entity.NewInvalidParamsError(err.Error()))
+	}
+
+	if err := p.pmRepo.DeleteDeniedPermission(c.Context(), req.IdentityId, req.ResourceId, req.Permission); err != nil {
+		return responseError(c, err)
+	}
+
+	return responseNilData(c, fiber.StatusOK)
 }
 
 type CheckRequest struct {
