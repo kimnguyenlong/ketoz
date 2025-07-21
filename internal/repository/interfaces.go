@@ -14,6 +14,8 @@ type Identity interface {
 
 	AddChild(ctx context.Context, parentId, childId string) error
 	ListChildren(ctx context.Context, id string) ([]*entity.Identity, error)
+
+	ListPermissions(ctx context.Context, id string) ([]*entity.Permission, error)
 }
 
 type Resource interface {

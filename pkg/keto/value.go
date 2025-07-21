@@ -61,6 +61,13 @@ var PermissionToRelation = map[Permission]Relation{
 	PermissionOwners:        RelationOwners,
 }
 
+var RelationToPermission = map[Relation]Permission{
+	RelationChildCreators: PermissionChildCreators,
+	RelationViewers:       PermissionViewers,
+	RelationEditors:       PermissionEditors,
+	RelationOwners:        PermissionOwners,
+}
+
 var DeniedPermissionToRelation = map[Permission]Relation{
 	PermissionChildCreators: RelationDeniedChildCreators,
 	PermissionViewers:       RelationDeniedViewers,

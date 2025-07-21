@@ -5,13 +5,13 @@ meta {
 }
 
 get {
-  url: {{api_base_url}}/permissions/check?identity_id=swe2&action=create_child&resource_id=projects
+  url: {{api_base_url}}/permissions/check?identity_id=swe&action=view&resource_id=projects
   body: none
   auth: inherit
 }
 
 params:query {
-  identity_id: swe2
-  action: create_child
+  identity_id: swe
+  action: view
   resource_id: projects
 }

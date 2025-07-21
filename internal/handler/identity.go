@@ -25,6 +25,8 @@ func (i *identity) RegisterRoutes(r fiber.Router) {
 	// Children
 	g.Get("/:id/children", i.ListChildren)
 	g.Post("/:id/children", i.AddChild)
+	// Permissions
+	g.Get("/:id/permissions", i.ListPermissions)
 }
 
 type CreateIdentityRequest struct {
@@ -88,4 +90,13 @@ func (i *identity) AddChild(c *fiber.Ctx) error {
 	}
 
 	return responseNilData(c, fiber.StatusCreated)
+}
+
+func (i *identity) ListPermissions(c *fiber.Ctx) error {
+	list, err := i.idRepo.ListPermissions(c.Context(), c.Params("id"))
+	if err != nil {
+		return responseError(c, err)
+	}
+
+	return responseRecords(c, fiber.StatusOK, list)
 }

@@ -1,0 +1,15 @@
+meta {
+  name: list permissions
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{api_base_url}}/identities/:id/permissions
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: swe
+}

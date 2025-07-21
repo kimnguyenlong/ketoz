@@ -168,3 +168,35 @@ func (i *identity) ListChildren(ctx context.Context, id string) ([]*entity.Ident
 
 	return list, nil
 }
+
+func (i *identity) ListPermissions(ctx context.Context, id string) ([]*entity.Permission, error) {
+	req := &rts.ListRelationTuplesRequest{
+		RelationQuery: &rts.RelationQuery{
+			Namespace: util.StringPointer(keto.NamespaceResource.String()),
+			Subject: &rts.Subject{
+				Ref: &rts.Subject_Set{
+					Set: &rts.SubjectSet{
+						Namespace: keto.NamespaceIdentity.String(),
+						Object:    id,
+						Relation:  keto.RelationEmpty.String(),
+					},
+				},
+			},
+		},
+	}
+	res, err := i.keto.Read.ListRelationTuples(ctx, req)
+	if err != nil {
+		return nil, entity.NewInternalError(err.Error())
+	}
+
+	list := make([]*entity.Permission, 0, len(res.GetRelationTuples()))
+	for _, r := range res.GetRelationTuples() {
+		list = append(list, &entity.Permission{
+			IdentityID: r.GetSubject().GetSet().GetObject(),
+			ResourceID: r.GetObject(),
+			Permission: keto.RelationToPermission[keto.Relation(r.GetRelation())],
+		})
+	}
+
+	return list, nil
+}
