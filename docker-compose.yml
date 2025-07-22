@@ -3,6 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    image: kimnguyenlong/ketoz:latest
     env_file:
       - .env
     ports:
