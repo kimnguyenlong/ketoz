@@ -45,7 +45,7 @@ func (i *identity) Create(c *fiber.Ctx) error {
 		return responseError(c, err)
 	}
 
-	return responseNilData(c, fiber.StatusCreated)
+	return responseNilData(c, fiber.StatusOK)
 }
 
 func (i *identity) List(c *fiber.Ctx) error {
@@ -89,7 +89,7 @@ func (i *identity) AddChild(c *fiber.Ctx) error {
 		return responseError(c, err)
 	}
 
-	return responseNilData(c, fiber.StatusCreated)
+	return responseNilData(c, fiber.StatusOK)
 }
 
 func (i *identity) ListPermissions(c *fiber.Ctx) error {

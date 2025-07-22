@@ -62,7 +62,7 @@ KETO_WRITE_PORT=4467
 
 ### API Reference
 
-Ketoz exposes a RESTful API for managing roles, permissions, and access policies. See the [API documentation](docs/api.md) for detailed endpoints and request/response formats.
+Ketoz exposes a RESTful API for managing roles, permissions, and access policies. See the [API documentation](docs/API.md) for detailed endpoints and request/response formats.
 
 ## License
 

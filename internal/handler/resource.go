@@ -43,7 +43,7 @@ func (r *resource) Create(c *fiber.Ctx) error {
 		return responseError(c, err)
 	}
 
-	return responseNilData(c, fiber.StatusCreated)
+	return responseNilData(c, fiber.StatusOK)
 }
 
 func (r *resource) List(c *fiber.Ctx) error {
@@ -87,5 +87,5 @@ func (r *resource) AddChild(c *fiber.Ctx) error {
 		return responseError(c, err)
 	}
 
-	return responseNilData(c, fiber.StatusCreated)
+	return responseNilData(c, fiber.StatusOK)
 }

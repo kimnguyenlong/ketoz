@@ -1,24 +1,28 @@
 # Ketoz REST API Documentation
 
-- [Identity](#identity)
-  - [Create Identity](#create-identity)
-  - [Get Identity](#get-identity)
-  - [List Identities](#list-identities)
-  - [Add Child Identity](#add-child-identity)
-  - [List Child Identities](#list-child-identities)
-  - [List Permissions for Identity](#list-permissions-for-identity)
-- [Resource](#resource)
-  - [Create Resource](#create-resource)
-  - [Get Resource](#get-resource)
-  - [List Resources](#list-resources)
-  - [Add Child Resource](#add-child-resource)
-  - [List Child Resources](#list-child-resources)
-- [Permission](#permission)
-  - [Check Permission](#check-permission)
-  - [Grant Permission](#grant-permission)
-  - [Revoke Permission](#revoke-permission)
-  - [Deny Permission](#deny-permission)
-  - [Delete Denied Permission](#delete-denied-permission)
+- [Endpoints](#endpoints)
+  - [Identity](#identity)
+    - [Create Identity](#create-identity)
+    - [Get Identity](#get-identity)
+    - [List Identities](#list-identities)
+    - [Add Child Identity](#add-child-identity)
+    - [List Child Identities](#list-child-identities)
+    - [List Permissions for Identity](#list-permissions-for-identity)
+  - [Resource](#resource)
+    - [Create Resource](#create-resource)
+    - [Get Resource](#get-resource)
+    - [List Resources](#list-resources)
+    - [Add Child Resource](#add-child-resource)
+    - [List Child Resources](#list-child-resources)
+  - [Permission](#permission)
+    - [Check Permission](#check-permission)
+    - [Grant Permission](#grant-permission)
+    - [Revoke Permission](#revoke-permission)
+    - [Deny Permission](#deny-permission)
+    - [Delete Denied Permission](#delete-denied-permission)
+- [Schemas](#schemas)
+
+## Endpoints
 
 ### Identity
 Manage identities and their hierarchical relationships.
@@ -40,7 +44,7 @@ Create a new identity.
     -d '{"id": "swe"}'
   ```
 - **Response**:
-  - `201 Created` on success.
+  - `200 OK` on success.
   - `400 Bad Request` if the ID is invalid or already exists.
 
 #### Get Identity
@@ -91,7 +95,7 @@ Add a child identity to a parent identity.
     -d '{"child_id": "backend"}'
   ```
 - **Response**:
-  - `201 Created` on success.
+  - `200 OK` on success.
   - `400 Bad Request` if the child ID is invalid.
   - `404 Not Found` if the parent identity does not exist.
 
@@ -147,7 +151,7 @@ Create a new resource.
     -d '{"id": "projects"}'
   ```
 - **Response**:
-  - `201 Created` on success.
+  - `200 OK` on success.
   - `400 Bad Request` if the ID is invalid or already exists.
 
 #### Get Resource
@@ -198,7 +202,7 @@ Add a child resource to a parent resource.
     -d '{"child_id": "projects_iam"}'
   ```
 - **Response**:
-  - `201 Created` on success.
+  - `200 OK` on success.
   - `400 Bad Request` if the child ID is invalid.
   - `404 Not Found` if the parent resource does not exist.
 
@@ -231,7 +235,7 @@ Grant a permission to an identity for a resource.
   |---------------|----------|-------------|
   | `identity_id` | String   | The ID of the identity to grant the permission to. |
   | `resource_id` | String   | The ID of the resource the permission applies to. |
-  | `permission`  | String   | The permission to grant (e.g., `owners`). |
+  | `permission`  | String   | The permission to grant (e.g., `owners`). Either `owners`, `editors`, `child_creators` or `viewers`|
 - **Description**: Grants the specified permission to the identity for the resource.
 - **cURL Example**:
   ```bash
@@ -240,7 +244,7 @@ Grant a permission to an identity for a resource.
     -d '{"identity_id": "swe", "resource_id": "projects", "permission": "owners"}'
   ```
 - **Response**:
-  - `201 Created` on success.
+  - `200 OK` on success.
   - `400 Bad Request` if parameters are invalid.
   - `404 Not Found` if identity or resource does not exist.
 
@@ -254,7 +258,7 @@ Revoke a permission from an identity for a resource.
   |---------------|----------|-------------|
   | `identity_id` | String   | The ID of the identity to revoke the permission from. |
   | `resource_id` | String   | The ID of the resource the permission applies to. |
-  | `permission`  | String   | The permission to revoke (e.g., `owners`). |
+  | `permission`  | String   | The permission to revoke (e.g., `owners`). Either `owners`, `editors`, `child_creators` or `viewers`|
 - **Description**: Removes the specified permission from the identity for the resource.
 - **cURL Example**:
   ```bash
@@ -263,7 +267,7 @@ Revoke a permission from an identity for a resource.
     -d '{"identity_id": "swe", "resource_id": "projects", "permission": "owners"}'
   ```
 - **Response**:
-  - `204 No Content` on success.
+  - `200 OK` on success.
   - `400 Bad Request` if parameters are invalid.
   - `404 Not Found` if the permission does not exist.
 
@@ -277,7 +281,7 @@ Deny a permission to an identity for a resource.
   |---------------|----------|-------------|
   | `identity_id` | String   | The ID of the identity to deny the permission to. |
   | `resource_id` | String   | The ID of the resource the permission applies to. |
-  | `permission`  | String   | The permission to deny (e.g., `viewers`). |
+  | `permission`  | String   | The permission to deny (e.g., `viewers`). Either `owners`, `editors`, `child_creators` or `viewers`|
 - **Description**: Explicitly denies the specified permission to the identity for the resource.
 - **cURL Example**:
   ```bash
@@ -286,7 +290,7 @@ Deny a permission to an identity for a resource.
     -d '{"identity_id": "swe", "resource_id": "projects", "permission": "viewers"}'
   ```
 - **Response**:
-  - `201 Created` on success.
+  - `200 OK` on success.
   - `400 Bad Request` if parameters are invalid.
   - `404 Not Found` if identity or resource does not exist.
 
@@ -300,7 +304,7 @@ Remove a denied permission from an identity for a resource.
   |---------------|----------|-------------|
   | `identity_id` | String   | The ID of the identity to remove the denied permission from. |
   | `resource_id` | String   | The ID of the resource the permission applies to. |
-  | `permission`  | String   | The permission to remove from denial (e.g., `viewers`). |
+  | `permission`  | String   | The permission to remove from denial (e.g., `viewers`). Either `owners`, `editors`, `child_creators` or `viewers`|
 - **Description**: Removes the denial of the specified permission for the identity and resource.
 - **cURL Example**:
   ```bash
@@ -309,7 +313,7 @@ Remove a denied permission from an identity for a resource.
     -d '{"identity_id": "swe", "resource_id": "projects", "permission": "viewers"}'
   ```
 - **Response**:
-  - `204 No Content` on success.
+  - `200 OK` on success.
   - `400 Bad Request` if parameters are invalid.
   - `404 Not Found` if the denied permission does not exist.
 
@@ -320,7 +324,7 @@ Check if an identity has a specific permission on a resource.
 - **URL**: `/permissions/check`
 - **Query Parameters**:
   - `identity_id`: The identity ID (e.g., `swe`) (String)
-  - `action`: The action to check (e.g., `view`) (String)
+  - `action`: The action to check (e.g., `view`) (String, either `view`, `edit`, `create_child` or `delete`)
   - `resource_id`: The resource ID (e.g., `projects`) (String)
 - **Description**: Verifies if the specified identity has the given permission for the resource.
 - **cURL Example**:
@@ -330,3 +334,41 @@ Check if an identity has a specific permission on a resource.
 - **Response**:
   - `200 OK` on success.
   - `400 Bad Request` if parameters are invalid.
+
+## Schemas
+
+### Response
+
+| Field        | Type     | Description                                         |
+|--------------|----------|-----------------------------------------------------|
+| `code`       | int      | Status code of the response.                        |
+| `message`    | String   | Description of the response.                        |
+| `data`       | Object   | Response's detail (Nullable).                       |
+
+### List Response
+
+| Field        | Type         | Description                                         |
+|--------------|--------------|-----------------------------------------------------|
+| `code`       | int          | Status code of the response.                        |
+| `message`    | String       | Description of the response.                        |
+| `records`    | List\<Object\> | List of items.                                    |
+
+### Identity
+
+| Field        | Type     | Description                                         |
+|--------------|----------|-----------------------------------------------------|
+| `id`         | String   | Unique identifier of the identity.                  |
+
+### Resource
+
+| Field        | Type     | Description                                         |
+|--------------|----------|-----------------------------------------------------|
+| `id`         | String   | Unique identifier of the resource.                  |
+
+### Permission
+
+| Field        | Type     | Description                                               |
+|--------------|----------|-----------------------------------------------------------|
+| `identity_id`| String   | Unique identifier of the identity.                        |
+| `resource_id`| String   | Unique identifier of the resource.                        |
+| `permission` | String   | Either `owners`, `editors`, `child_creators` or `viewers` |
