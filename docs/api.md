@@ -15,12 +15,17 @@
     - [Add Child Resource](#add-child-resource)
     - [List Child Resources](#list-child-resources)
   - [Permission](#permission)
-    - [Check Permission](#check-permission)
     - [Grant Permission](#grant-permission)
     - [Revoke Permission](#revoke-permission)
     - [Deny Permission](#deny-permission)
     - [Delete Denied Permission](#delete-denied-permission)
+    - [Check Permission](#check-permission)
 - [Schemas](#schemas)
+    - [Response](#response)
+    - [List Response](#list-response)
+    - [Identity](#identity-schema)
+    - [Resource](#resource-schema)
+    - [Permission](#permission-schema)
 
 ## Endpoints
 
@@ -44,7 +49,7 @@ Create a new identity.
     -d '{"id": "swe"}'
   ```
 - **Response**:
-  - `200 OK` on success.
+  - `200 OK` on success. 
   - `400 Bad Request` if the ID is invalid or already exists.
 
 #### Get Identity
@@ -60,7 +65,16 @@ Retrieve details of a specific identity.
   curl -X GET http://ketoz/api/identities/swe
   ```
 - **Response**:
-  - `200 OK` on success
+  - `200 OK` on success. ([Response](#response)\<[Identity](#identity-schema)\>)
+    ```json
+    {
+      "code": 0,
+      "message": "Success",
+      "data": {
+        "id": "swe"
+      }
+    }
+    ```
   - `404 Not Found` if the identity does not exist.
 
 #### List Identities
@@ -74,7 +88,18 @@ Retrieve a list of all identities.
   curl -X GET http://ketoz/api/identities
   ```
 - **Response**:
-  - `200 OK` on success.
+  - `200 OK` on success. ([List Response](#list-response)\<[Identity](#identity-schema)\>)
+    ```json
+    {
+      "code": 0,
+      "message": "Success",
+      "records": [
+        {
+          "id": "swe"
+        }
+      ]
+    }
+    ```
 
 #### Add Child Identity
 Add a child identity to a parent identity.
@@ -112,7 +137,18 @@ Retrieve a list of child identities for a specific identity.
   curl -X GET http://ketoz/api/identities/swe/children
   ```
 - **Response**:
-  - `200 OK` on success, 
+  - `200 OK` on success. ([List Response](#list-response)\<[Identity](#identity-schema)\>)
+    ```json
+    {
+      "code": 0,
+      "message": "Success",
+      "records": [
+        {
+          "id": "backend"
+        }
+      ]
+    }
+    ```
   - `404 Not Found` if the parent identity does not exist.
 
 #### List Permissions for Identity
@@ -128,7 +164,20 @@ Retrieve permissions associated with a specific identity.
   curl -X GET http://ketoz/api/identities/swe/permissions
   ```
 - **Response**:
-  - `200 OK` on success
+  - `200 OK` on success. ([List Response](#list-response)\<[Permission](#permission-schema)\>)
+    ```json
+    {
+      "code": 0,
+      "message": "Success",
+      "records": [
+        {
+          "identity_id": "swe",
+          "resource_id": "projects",
+          "permission": "owners"
+        }
+      ]
+    }
+    ```
   - `404 Not Found` if the identity does not exist.
 
 ### Resource
@@ -167,7 +216,16 @@ Retrieve details of a specific resource.
   curl -X GET http://ketoz/api/resources/projects
   ```
 - **Response**:
-  - `200 OK` on success.
+  - `200 OK` on success. ([Response](#response)\<[Resource](#resource-schema)\>)
+    ```json
+    {
+      "code": 0,
+      "message": "Success",
+      "data": {
+        "id": "projects"
+      }
+    }
+    ```
   - `404 Not Found` if the resource does not exist.
 
 #### List Resources
@@ -181,7 +239,18 @@ Retrieve a list of all resources.
   curl -X GET http://ketoz/api/resources
   ```
 - **Response**:
-  - `200 OK` on success.
+  - `200 OK` on success. ([List Response](#list-response)\<[Resource](#resource-schema)\>)
+    ```json
+    {
+      "code": 0,
+      "message": "Success",
+      "records": [
+        {
+          "id": "projects"
+        }
+      ]
+    }
+    ```
 
 #### Add Child Resource
 Add a child resource to a parent resource.
@@ -219,7 +288,18 @@ Retrieve a list of child resources for a specific resource.
   curl -X GET http://ketoz/api/resources/projects/children
   ```
 - **Response**:
-  - `200 OK` on success.
+  - `200 OK` on success. ([List Response](#list-response)\<[Resource](#resource-schema)\>)
+    ```json
+    {
+      "code": 0,
+      "message": "Success",
+      "records": [
+        {
+          "id": "projects_iam"
+        }
+      ]
+    }
+    ```
   - `404 Not Found` if the parent resource does not exist.
 
 ### Permission
@@ -353,19 +433,19 @@ Check if an identity has a specific permission on a resource.
 | `message`    | String       | Description of the response.                        |
 | `records`    | List\<Object\> | List of items.                                    |
 
-### Identity
+### Identity Schema
 
 | Field        | Type     | Description                                         |
 |--------------|----------|-----------------------------------------------------|
 | `id`         | String   | Unique identifier of the identity.                  |
 
-### Resource
+### Resource Schema
 
 | Field        | Type     | Description                                         |
 |--------------|----------|-----------------------------------------------------|
 | `id`         | String   | Unique identifier of the resource.                  |
 
-### Permission
+### Permission Schema
 
 | Field        | Type     | Description                                               |
 |--------------|----------|-----------------------------------------------------------|
