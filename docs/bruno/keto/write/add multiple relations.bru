@@ -1,0 +1,42 @@
+meta {
+  name: add multiple relations
+  type: http
+  seq: 1
+}
+
+patch {
+  url: {{keto_write}}/admin/relation-tuples
+  body: json
+  auth: inherit
+}
+
+body:json {
+  [
+    {
+      "action": "insert",
+      "relation_tuple": {
+        "namespace": "Resource",
+        "object": "projects_iam",
+        "relation": "parents",
+        "subject_set": {
+          "namespace": "Resource",
+          "object": "projects",
+          "relation": ""
+        }
+      }
+    },
+    {
+      "action": "insert",
+      "relation_tuple": {
+        "namespace": "Resource",
+        "object": "projects_iam_backend",
+        "relation": "parents",
+        "subject_set": {
+          "namespace": "Resource",
+          "object": "projects_iam",
+          "relation": ""
+        }
+      }
+    }
+  ]
+}

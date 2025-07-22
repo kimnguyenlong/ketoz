@@ -1,0 +1,19 @@
+meta {
+  name: delete denied
+  type: http
+  seq: 4
+}
+
+delete {
+  url: {{api_base_url}}/permissions/denied
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "identity_id": "swe",
+    "resource_id": "projects",
+    "permission": "viewers"
+  }
+}

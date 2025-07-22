@@ -1,0 +1,55 @@
+services:
+  ketoz:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${SERVICE_PORT}:${SERVICE_PORT}"
+    restart: on-failure
+    depends_on:
+      - keto
+
+  keto:
+    image: oryd/keto:v0.14.0
+    ports:
+      - "4466:4466"
+      - "4467:4467"
+    command: serve -c /home/ory/keto.yml
+    restart: on-failure
+    depends_on:
+      - keto-migrate
+    environment:
+      - DSN=postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE_NAME}?sslmode=disable
+    volumes:
+      - type: bind
+        source: ./keto
+        target: /home/ory
+
+  keto-migrate:
+    image: oryd/keto:v0.14.0
+    command: migrate up -y
+    restart: on-failure
+    environment:
+      - DSN=postgres://${DB_USERNAME}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_DATABASE_NAME}?sslmode=disable
+    volumes:
+      - type: bind
+        source: ./keto
+        target: /home/ory
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:17
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_DATABASE_NAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

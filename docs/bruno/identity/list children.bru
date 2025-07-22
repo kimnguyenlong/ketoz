@@ -1,0 +1,15 @@
+meta {
+  name: list children
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{api_base_url}}/identities/:id/children
+  body: none
+  auth: inherit
+}
+
+params:path {
+  id: swe
+}

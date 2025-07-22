@@ -1,0 +1,27 @@
+meta {
+  name: check permission
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{keto_read}}/relation-tuples/check
+  body: json
+  auth: inherit
+}
+
+params:query {
+  ~max-depth: 100
+}
+
+body:json {
+  {
+    "namespace": "Resource",
+    "object": "projects",
+    "relation": "view",
+    "subject_set": {
+      "namespace": "Identity",
+      "object": "swe"
+    }
+  }
+}

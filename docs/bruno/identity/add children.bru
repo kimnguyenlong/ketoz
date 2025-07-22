@@ -1,0 +1,21 @@
+meta {
+  name: add children
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{api_base_url}}/identities/:id/children
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: swe
+}
+
+body:json {
+  {
+    "child_id": "backend"
+  }
+}

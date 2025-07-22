@@ -1,0 +1,17 @@
+meta {
+  name: check
+  type: http
+  seq: 5
+}
+
+get {
+  url: {{api_base_url}}/permissions/check?identity_id=swe&action=view&resource_id=projects
+  body: none
+  auth: inherit
+}
+
+params:query {
+  identity_id: swe
+  action: view
+  resource_id: projects
+}

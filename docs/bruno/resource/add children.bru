@@ -1,0 +1,21 @@
+meta {
+  name: add children
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{api_base_url}}/resources/:id/children
+  body: json
+  auth: inherit
+}
+
+params:path {
+  id: projects
+}
+
+body:json {
+  {
+    "child_id": "projects_iam"
+  }
+}
